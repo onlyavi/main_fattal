@@ -13,13 +13,13 @@ class StockCreateForm(forms.ModelForm):
         item_fattal_code =self.cleaned_data.get('item_fattal_code')
         if (not category_name) and (not item_name) and (not item_fattal_code) :
             raise forms.ValidationError('You must fill at least one field ITEM CODE or ITEM NAME ')
-        instance = Stock.objects.get(id)
-        print (instance.item_name)
-        if item_name != instance.item_name:
-            if item_name:                
-                for instance in Stock.objects.all():
-                    if (instance.item_name == item_name):
-                        raise forms.ValidationError(item_name +' Already exist')
+        #instance = Stock.objects.get(id)
+        #print (instance.item_name)
+        # if item_name != instance.item_name:
+        #     if item_name:                
+        for instance in Stock.objects.all():
+            if (instance.item_name == item_name):
+                raise forms.ValidationError(item_name +' Already exist')
             
         return item_name
     def clean_item_fattal_code(self):
@@ -30,10 +30,10 @@ class StockCreateForm(forms.ModelForm):
             raise forms.ValidationError('You must fill at least one field ITEM CODE or ITEM NAME ')
     
        
-        if item_fattal_code:
-            for instance in Stock.objects.all():    
-                if (instance.item_fattal_code == item_fattal_code) and (int(instance.item_fattal_code) < 990000):
-                    raise forms.ValidationError('item code '+ str(item_fattal_code) +' Already exist')
+    #     if item_fattal_code:
+        for instance in Stock.objects.all():    
+            if (instance.item_fattal_code == item_fattal_code) and (int(instance.item_fattal_code) < 990000):
+                raise forms.ValidationError('item code '+ str(item_fattal_code) +' Already exist')
         return item_fattal_code
     
 

@@ -31,7 +31,7 @@ def delete_items(request,pk):
 
 def about_view(request):
     title='Welcome to my first Django project'
-    today = datetime.now().date()
+    #today = datetime.now().date()
     aboutmyself= "My name is Avi Sivan. My email onlyavi@gmail.com"
     context= {
         "title":title,
@@ -49,7 +49,7 @@ def under_construction(request):
 
 def add_newitem_view(request):
     form = StockCreateForm(request.POST or None)
-    z = form['item_name'].value()
+    #z = form['item_name'].value()
     if form.is_valid():
         form.save()
         return redirect('/add_newitem')

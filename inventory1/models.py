@@ -45,7 +45,7 @@ class Stock(models.Model):
     }
     
     suppliers_item_unit_kind=models.CharField(max_length=50, blank=True, null=True, choices=suppliers_unit_kind_choice)
-    date1=models.DateTimeField()
+  
     image=models.ImageField(upload_to='images/')  
     
     
