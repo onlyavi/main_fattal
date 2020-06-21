@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import  static
-from inventory1.views import homepage_view, about_view, add_newitem_view, list_items_view, update_items,delete_items, under_construction, StockFSearch_view, excel_upload
+from inventory1.views import homepage_view, about_view, add_newitem_view, list_items_view, update_items,delete_items, under_construction, StockFSearch_view, csv_upload,  csv_excel_file
 
 
 urlpatterns = [
@@ -26,6 +26,7 @@ urlpatterns = [
     path('about/', about_view, name='about'),
     path('add_newitem/', add_newitem_view, name='add_newitem'),
     path('list_items/', list_items_view, name='list_items_view'),
+    #path('excel_upload/', excel_import_example, name='excel_import_example'),
     path('update_items/<str:pk>/', update_items, name="update_items"),
     #path('update_item', update_item, name="update_item"),
     #path(r'^delete_items/(?P<id>\d+)/delete$', delete_items, name='delete_items'),
@@ -33,6 +34,7 @@ urlpatterns = [
     path('under_construction/', under_construction, name='under_construction'),
     path('full_search/', StockFSearch_view, name='StockFSearch_view'),
    # path('MEDIA_URL/', settings.MEDIA_URL ),
-    path('excel_upload1/', excel_upload, name='excel_upload'),
+    #path('excel_upload1/', csv_upload, name='csv_upload'),
+    path('excel_upload1/', csv_excel_file, name='csv_excel_file'),
 ] + static (settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
   
