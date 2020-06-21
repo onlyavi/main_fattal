@@ -35,7 +35,12 @@ class StockCreateForm(forms.ModelForm):
             if (instance.item_fattal_code == item_fattal_code) and (int(instance.item_fattal_code) < 990000):
                 raise forms.ValidationError('item code '+ str(item_fattal_code) +' Already exist')
         return item_fattal_code
+
+
     
+
+
+   
 
     
         
@@ -125,3 +130,4 @@ class SuppliersCreateForm(forms.ModelForm):
         #The fields I want to use
      #   fields=['suppliers_name','supplier_phone_number','supplier_sale_leader_name','supplier_sale_leader_phone','suppliers_driver_info']
         fields=['suppliers_name']  
+

@@ -1,11 +1,17 @@
+import csv, io   #for csv
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .forms import StockCreateForm, SuppliersCreateForm, StockSearchForm,StockUpdateForm, StockFullSearchForm
 from .models import *
+from .clean_import_files import *
+from django.contrib import messages
+
 from datetime import datetime
+from django.contrib.auth.decorators import permission_required  #for updateing from csv
+
 # Create your views here.
-
-
+ 
+ 
 def homepage_view(request):
     #this is the title for now
     #print (request.user)
@@ -204,6 +210,64 @@ def StockFSearch_view(request):
 
 
 
+#@permission_required('admin.can_add_log_entry')
+def excel_upload(request):
+    template1="excel_upload1.html"
+    prompt = {
+        'order': 'MAKE SURE that the csv is in order'
+
+    }
+
+    if request.method == "GET":
+        return render (request, template1, prompt)
+
+    csv_file =request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, "this is not csv file")
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string) #to skip the first line usually headrs
+    for column in csv.reader(io_string, delimiter=',', quotechar="|" ):
+        skip=False
+        sskip=False
+        item_fattal_code_check= column[0]
+        clean_excel_item_fattal_code(item_fattal_code_check,skip)
+
+        item_name_check= column[1]
+        clean_excel_item_name(item_name_check,skip)
+        
+        sup_name= column[2]
+        clean_excel_supplliers_name(sup_name,sskip)
+   # item_name = a.cleaned_data.get('item_name')
+    #category_name =self.cleaned_data.get('category_name')
+    
+      
+
+        
+    
+        #clean_excel_item_fattal_code(item_name_check,skip)
+        if skip == False:
+            
+            _, created = Stock.objects.update_or_create(
+                item_fattal_code=column[0],
+                item_name= column[1],
+
+             )
+        if sskip==False:
+            _, created = SupplierInformation.objects.update_or_create(
+                suppliers_name=column[2]
+
+            ) 
+        if skip == True:
+            skip = False
+        if sskip == True:
+            sskip = False
+        
+    context ={}
+    #so it can be change in the future
+
+    return render(request,template1,context)
 
 
 

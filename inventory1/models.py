@@ -8,6 +8,7 @@ from django.db import models
 class Stock(models.Model):
     
     category_name = models.CharField(max_length=50, blank=True, null=True) 
+    sub_category_name = models.CharField(max_length=50, blank=True, null=True) 
     item_name = models.CharField(max_length=50, blank=True, null=True)
    # item_fattal_code=models.CharField(max_length=50, blank=True, null=True)
     item_fattal_code= models.DecimalField(default='0',decimal_places=0,max_digits=1000,blank=True)
@@ -54,14 +55,15 @@ class Stock(models.Model):
 
     
 class SupplierInformation(models.Model):
-    suppliers_choice ={
-        ('a','a'),
-        ('b','b'),
-        ('c','c'),
-        ('other','other')        
-    }
-    suppliers_name=models.CharField(max_length=50, blank=True, null=True, choices=suppliers_choice)
-    suppliers_item_unit_quantity=models.DecimalField(decimal_places=2,max_digits=1000)
+    # suppliers_choice ={
+    #     ('a','a'),
+    #     ('b','b'),
+    #     ('c','c'),
+    #     ('other','other')        
+    # }
+    # suppliers_name=models.CharField(max_length=50, blank=True, null=True, choices=suppliers_choice)
+    suppliers_name = models.CharField(max_length=50, blank=True, null=True)
+    suppliers_item_unit_quantity=models.DecimalField(default='0',decimal_places=0,max_digits=1000,blank=True)
     
     suppliers_sale_leader_name=models.CharField (max_length=50, blank=True, null=True)
     suppliers_sale_leader_phone=models.CharField (max_length=50, blank=True, null=True)

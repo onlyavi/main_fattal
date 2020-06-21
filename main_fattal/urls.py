@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import  static
-from inventory1.views import homepage_view, about_view, add_newitem_view, list_items_view, update_items,delete_items, under_construction, StockFSearch_view
+from inventory1.views import homepage_view, about_view, add_newitem_view, list_items_view, update_items,delete_items, under_construction, StockFSearch_view, excel_upload
 
 
 urlpatterns = [
@@ -33,6 +33,6 @@ urlpatterns = [
     path('under_construction/', under_construction, name='under_construction'),
     path('full_search/', StockFSearch_view, name='StockFSearch_view'),
    # path('MEDIA_URL/', settings.MEDIA_URL ),
-   
+    path('excel_upload1/', excel_upload, name='excel_upload'),
 ] + static (settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
   
