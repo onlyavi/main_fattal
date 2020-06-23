@@ -17,7 +17,7 @@ class Stock(models.Model):
     item_barcode_external = models.CharField(max_length=50, blank=True, null=True)
     item_unit_kind_choice={
         ('kg','kg'),
-        ('grams','grams'),
+        ('grams','grams'), 
         ('liters','liters'),
         ('units in box','unit_in_box'),
         ('other','other'),
@@ -46,6 +46,7 @@ class Stock(models.Model):
     }
     
     suppliers_item_unit_kind=models.CharField(max_length=50, blank=True, null=True, choices=suppliers_unit_kind_choice)
+    suppliers_fattal_code=models.CharField(max_length=50, blank=True, null=True, choices=suppliers_unit_kind_choice)
   
     image=models.ImageField(upload_to='images/')  
     

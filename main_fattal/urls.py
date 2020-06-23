@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import  static
-from inventory1.views import homepage_view, about_view, add_newitem_view, list_items_view, update_items,delete_items, under_construction, StockFSearch_view, csv_upload,  csv_excel_file
+from inventory1.views import homepage_view, about_view, add_newitem_view, list_items_view, update_items,delete_items, under_construction, StockFSearch_view,  csv_excel_file
 
 
 urlpatterns = [
