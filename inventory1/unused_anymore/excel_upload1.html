@@ -1,0 +1,63 @@
+{%extends 'base.html'%}
+{%load crispy_forms_tags   %}
+{% load  static %}
+
+{%block content%}
+
+<link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
+
+
+
+    <style>
+        body {
+            /* adding a little margin so we can see the borders better */
+            margin: 1em;
+        }
+        .box {
+            display: inline-block;
+            width: 100px;
+            height: 24px;
+            background-color: gray;
+        }
+    </style>
+{%if messages%}
+    {% for message in messages%}
+        <div>
+        <strong> {{messages|safe}} </strong>
+
+        </div>
+
+    {% endfor %}
+
+
+{%else%}
+{{order}}
+<p>Only import csv or xlsx file, (make sure the fields are in correct order)</p>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+     {{form|crispy}}
+    <input type="file" name="file">
+    <p>
+    <button type="submit">Upload</button> <label>Upload file</label> 
+</p>
+</form>
+
+
+{% endif %}
+{% for row in excel_data %}
+            {% for cell in row %}
+                {{ cell }}&nbsp;&nbsp;
+            {% endfor %}
+            <br>
+        {% endfor %}
+{% endblock %}
+
+{% comment %} 
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Upload file</label>
+    <input type="file" name="file">
+    <p>only accept CSV file </p>
+    <button type="submit">Upload</button>  
+
+</form> {% endcomment %}
