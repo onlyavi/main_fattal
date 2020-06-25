@@ -1,14 +1,14 @@
 import csv, io   #for csv
 from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpRequest
-from .forms import StockCreateForm, SuppliersCreateForm, StockSearchForm,StockUpdateForm, StockFullSearchForm, import_csv, import_excel
+from .forms import StockCreateForm, SuppliersCreateForm, StockSearchForm,StockUpdateForm, StockFullSearchForm
 from .models import *
 from .clean_import_files import *
 from django.contrib import messages
 import openpyxl
 from datetime import datetime
 from django.contrib.auth.decorators import permission_required  #for updateing from csv
-from django.views.generic import FormView
+
 # Create your views here.
  
  
@@ -210,48 +210,88 @@ def StockFSearch_view(request):
     return render(request, "full_search.html", context)
 
 
-def import_excel_view(request):
-    form=import_excel( request.FILES)
-    error_upload=''
-    error=''
-    if 'GET'== request.method: 
-       return render(request,'excel_upload.html', {})
-    else:
-        try:
-            excel_file = request.FILES["file"]
-            print ("### \n",excel_file)
-            
-        except:
-            
-            excel_file = 'None'
-            print ("### \n",excel_file)
-            #messages.error(request, "This is not a valid file format (only csv or excel xlsx")
-            #return HttpResponse("boom")
-            error_upload="You can't  upload blank, only an EXCEL file" 
-            context={
-                "error_upload":error_upload
+def csv_excel_file(request):
+    prompt = {
+        'order': 'MAKE SURE that this is csv or xlsx file, and the fields are in correct order'
 
-            }
-            return render(request,'excel_upload.html', context)
+    }
+    if request.method == "GET":
+        return render (request, 'excel_upload1.html', {})
+    else:
+        messages.error(request, "This is not a valid file format (only csv or excel xlsx")
     
-    if not excel_file.name.endswith('.xlsx'):
-        #error="\"" +excel_file.name + "\" is not a valid File"
-        error= "This is not a valid File"
-        error_file="\"" +excel_file.name +"\""
-        context={
+    if not request.POST.get('Submit'):
+        messages.error(request, "This is not a valid file format (only csv or excel xlsx")
+    submit=request.POST.get('Submit')
+    
 
-            "error":error,
-            "error_file":error_file
+    file_data= request.FILES['file']
+    if not file_data.name.endswith('.csv') and not file_data.name.endswith('.xlsx'):
+        messages.error(request, "This is not a valid file format (only csv or excel xlsx")
+    elif file_data.name.endswith('.csv'):
+        #csv_upload(request,file_data)
+        csv_file =request.FILES['file1']
+        data_set = csv_file.read().decode('UTF-8')
+        io_string = io.StringIO(data_set)
+        next(io_string) #to skip the first line usually headrs
+        for column in csv.reader(io_string, delimiter=',', quotechar="|" ):
+            skip=False
+            sskip=False
+            item_fattal_code_check= column[0]
+            clean_excel_item_fattal_code(item_fattal_code_check,skip)
 
-        }
+            item_name_check= column[1]
+            clean_excel_item_name(item_name_check,skip)
+            
+            # sup_name= column[2]
+            # clean_excel_supplliers_name(sup_name,sskip)
+    # item_name = a.cleaned_data.get('item_name')
+        #category_name =self.cleaned_data.get('category_name')
+        
+            
+        
+            #clean_excel_item_fattal_code(item_name_check,skip)
+            if skip == False:
+                item_fattal_code_converted = int(item_fattal_code_check)
+                # _, created = Stock.objects.update_or_create(
+                #     item_fattal_code=item_fattal_code_check,
+                #     item_name= item_name_check,
 
-        return render(request,'excel_upload.html', context)
-    else:
-     # you may put validations here to check extension or file size
-        print ("before wb ")
-        wb = openpyxl.load_workbook(excel_file)
+                # )
+                _, created = Stock.objects.update_or_create(
 
-        #getting a particular sheet by name out of many sheets
+                    item_fattal_code=item_fattal_code_converted,
+                    item_name= item_name_check,
+                    #sub_category_name=row_data[row_counter+2],
+                    #suppliers_fattal_code= row_data[row_counter+4],
+                    category_name='',
+                    description='',
+                )
+            if sskip==False:
+                _, created = SupplierInformation.objects.update_or_create(
+                    suppliers_name=column[2]
+
+                ) 
+            if skip == True:
+                skip = False
+            if sskip == True:
+                sskip = False
+            
+        context ={}
+        #so it can be change in the future
+        
+        return render(request,'excel_upload1.html',context)
+
+    #  *** EXCEL FILE INPUT CHECK ***
+
+    elif file_data.name.endswith('.xlsx'):
+        #excel_upload(request)
+        #excel_file = request.FILES["excel_file"]
+        # you may put validations here to check extension or file size
+        
+        wb = openpyxl.load_workbook(file_data)
+
+        # getting a particular sheet by name out of many sheets
         worksheet = wb["Sheet1"]
         print(worksheet)
 
@@ -262,88 +302,98 @@ def import_excel_view(request):
         # getting active sheet
         active_sheet = wb.active
         print(active_sheet)
-
+        
         excel_data = list()
-        # print (worksheet.iter_rows())
-        # print ("****** rows: ", worksheet.max_row) 
-        # print ("****** col: ", worksheet.max_column) 
-             
-        #resetting values: 
-        # first _run to skip the first row in ecel
-        # skip+sskip update database if found new data
-        # The validation done in differend python code: clean_import_files
-        skip=False
-        sskip=False
-        row_counter=0
-        first_run = True
-        #print (row_counter)
-        #print (row_data)
+        print (worksheet.iter_rows())
+        print ("****** rows: ", worksheet.max_row) 
+        print ("****** col: ", worksheet.max_column) 
+        
+
+        #print("number of columns: ", worksheet.iter_cols())       
+        
+        # _, created = Stock.objects.update_or_create(
+        #             item_fattal_code=worksheet["A2"].value,
+        #             item_name= worksheet["B2"].value,
+
+        #     )
+       
         # iterating over the rows and
         # getting value from each cell in row
+        row_counter=0
+        first_run = True
         for  row in worksheet.iter_rows(min_row=1):
             row_data = list()
-            #print ("top=",row_counter)
+            print ("top=",row_counter)
+        
             for cell in row:
                 row_data.append(str(cell.value))
-            
-            excel_data.append(row_data)
-        # item_fattal_code_check = column[0]
-        # clean_excel_item_fattal_code(item_fattal_code_check,skip)
+                
 
-        # item_name_check= column[1]
-        # clean_excel_item_name(item_name_check,skip)
+            excel_data.append(row_data)
+            # print(excel_data)
+            # print(len(excel_data))
+            # print(excel_data[0][0])
+            # #print (excel_data[row_counter])
+            # print ("****")
+            # print (len(row_data))    
+            # print (type(excel_data))
+            # print (len(excel_data))
+            # print (row_data[0])
+            # print (row_data[1])
+            # print("************")
             
-        # sup_name= column[2]
-        # clean_excel_supplliers_name(sup_name,sskip)
+            #item_fattal_code_check = column[0]
+            #clean_excel_item_fattal_code(item_fattal_code_check,skip)
+
+            #item_name_check= column[1]
+            #clean_excel_item_name(item_name_check,skip)
+            
+            #sup_name= column[2]
+            #clean_excel_supplliers_name(sup_name,sskip)
             #print ("row counter: ", row_counter)
             skip=False
             sskip=False
-        #print (row_counter)
-        #print (row_data)
-              
-        
-                
-        
-        
+            print (row_counter)
+            print (row_data)
             for nonedata in range(row_counter):
-                
                 if row_data[nonedata] =='None':
                     row_data[nonedata]=''
-                    #print ("found none")
-            
+                    print ("found none")
             #before clean_excel_item_fattal_code 0   
             if not row_data[row_counter] =='None' and (first_run == False) :
                 #before clean_excel_item_fattal_code 
                 if row_data[row_counter].isnumeric:
                     item_fattal_code_check = row_data[row_counter]
                     clean_excel_item_fattal_code(item_fattal_code_check,skip)
-                    #print (skip, " num ", row_data[row_counter], "=item fattal code ", row_counter, "=row counter" )
+                    print (skip, " num ", row_data[row_counter], "=item fattal code ", row_counter, "=row counter" )
+
                 #before clean_excel_item_name  1
                 if row_data[row_counter + 1].isalpha:
                     item_name_check= row_data[row_counter+1]
-                    #print ("before calling function= ", skip, " item name= ", item_name_check)
+                    print ("before calling function= ", skip, " item name= ", item_name_check)
                     clean_excel_item_name(item_name_check,skip)
-                    #print (skip, " after fiunction ", row_data[row_counter], "=item name ", row_counter, "=row counter" )
+                    print (skip, " after fiunction ", row_data[row_counter], "=item name ", row_counter, "=row counter" )
                 #before clean_excel_sub_category_name   2            
-                if (row_data[row_counter + 2]).isalnum:
-                    sub_category_name= row_data[row_counter+2]
-                    clean_excel_sub_category_name(sub_category_name,skip)
-                    #print (skip, " sub+_category ", row_data[row_counter+2], "=sub category ", row_counter, "=row counter" )   
-                    #print (skip, " alpha")
+                # if (row_data[row_counter + 2]).isalnum:
+                #     sub_category_name= row_data[row_counter+2]
+                #     clean_excel_sub_category_name(sub_category_name,skip)
+                #     print (skip, " sub+_category ", row_data[row_counter+2], "=sub category ", row_counter, "=row counter" )   
+                #     print (skip, " alpha")
                 
-                # # #before suplier name   3
-                # if (row_data[row_counter + 3]).isalnum:
+                # #before suplier name   3
+                # if (row_data[row_counter + 3].isalnum:
                 #     supplliers_name= row_data[row_counter+3]
-                #     clean_excel_suppllers_name(supplliers_namek,skip)
-                    #print (skip, " alpha ", row_data[row_counter], "=item name ", row_counter, "=row counter" )   
-                    #print (skip, " alpha")
-                #before suppliers_fattal_code  4 - no need to be clean. can be duplicate in same row input
-            # if (row_data[row_counter + 4].isalnum:
-                #   suppliers_fattal_code= row_data[row_counter+3]
-                    #clean_excel_suppliers_fattal_code(suppliers_fattal_code,skip)
-                    #print (skip, " alpha ", row_data[row_counter], "=item name ", row_counter, "=row counter" )   
-                    #print (skip, " alpha")
-            
+                #     clean_excel_supplliers_name(supplliers_namek,skip)
+                #     #print (skip, " alpha ", row_data[row_counter], "=item name ", row_counter, "=row counter" )   
+                #     #print (skip, " alpha")
+
+                # #before suppliers_fattal_code  4 - no need to be clean. can be duplicate in same row input
+                # if (row_data[row_counter + 4].isalnum:
+                #     suppliers_fattal_code= row_data[row_counter+3]
+                #     #clean_excel_suppliers_fattal_code(suppliers_fattal_code,skip)
+                #     #print (skip, " alpha ", row_data[row_counter], "=item name ", row_counter, "=row counter" )   
+                #     #print (skip, " alpha")
+                
                 
                 
                 if skip == False:
@@ -357,12 +407,14 @@ def import_excel_view(request):
                         category_name='',
                         description='',
                         
+
                     )
+
                 if sskip == False:
                     _, created = SupplierInformation.objects.update_or_create(
                         suppliers_name=row_data[row_counter+3]
-
-                ) 
+ 
+                   ) 
                 if skip == True:
                     skip = False
                 if sskip == True:
@@ -371,196 +423,14 @@ def import_excel_view(request):
             row_counter = 0            
             
 
-        #print(excel_data[1])
-        #print (excel_data[1][4])
-        # reading a cell
-        #print(worksheet["A1"].value)
-    
-   
-    
-    #print ("form= ",form)
-    #print (excel_file)
-    context={
-        "form":form,
-
-
-    }
-
-    #print ("not fell in upload ")
-    return render(request, "excel_upload.html", context)
-
-
-
-
-
-
-
-
-
-
-
-
-# def import_excel_file(request):
-#     prompt = {
-#         'order': 'MAKE SURE that this is csv or xlsx file, and the fields are in correct order'
-
-#     }
-    
-#     if request.method == "GET":
-#         file_data= request.FILES['file']
-#         #if file_data.is_valid:
-#         # return render (request, 'excel_upload1.html', {})
-#     else:
-#         return redirect ('/')
-#         file_data= request.FILES['file']
-#     if not file_data.name.endswith('.xlsx'):
-#         messages.error(request, "This is not a valid file format (only csv or excel xlsx")
-#         return redirect ('/')
-#     else:
-#     # you may put validations here to check extension or file size
-        
-#         wb = openpyxl.load_workbook(file_data)
-
-#         # getting a particular sheet by name out of many sheets
-#         worksheet = wb["Sheet1"]
-#         print(worksheet)
-
-#         # getting all sheets
-#         sheets = wb.sheetnames
-#         print(sheets)
-
-#         # getting active sheet
-#         active_sheet = wb.active
-#         print(active_sheet)
-        
-#         excel_data = list()
-#         print (worksheet.iter_rows())
-#         print ("****** rows: ", worksheet.max_row) 
-#         print ("****** col: ", worksheet.max_column) 
-        
-
-#         #print("number of columns: ", worksheet.iter_cols())       
-        
-#         # _, created = Stock.objects.update_or_create(
-#         #             item_fattal_code=worksheet["A2"].value,
-#         #             item_name= worksheet["B2"].value,
-
-#         #     )
-       
-#         # iterating over the rows and
-#         # getting value from each cell in row
-#         row_counter=0
-#         first_run = True
-#         for  row in worksheet.iter_rows(min_row=1):
-#             row_data = list()
-#             print ("top=",row_counter)
-        
-#             for cell in row:
-#                 row_data.append(str(cell.value))
-                
-
-#             excel_data.append(row_data)
-#             # print(excel_data)
-#             # print(len(excel_data))
-#             # print(excel_data[0][0])
-#             # #print (excel_data[row_counter])
-#             # print ("****")
-#             # print (len(row_data))    
-#             # print (type(excel_data))
-#             # print (len(excel_data))
-#             # print (row_data[0])
-#             # print (row_data[1])
-#             # print("************")
-            
-#             #item_fattal_code_check = column[0]
-#             #clean_excel_item_fattal_code(item_fattal_code_check,skip)
-
-#             #item_name_check= column[1]
-#             #clean_excel_item_name(item_name_check,skip)
-            
-#             #sup_name= column[2]
-#             #clean_excel_supplliers_name(sup_name,sskip)
-#             #print ("row counter: ", row_counter)
-#             skip=False
-#             sskip=False
-#             print (row_counter)
-#             print (row_data)
-#             for nonedata in range(row_counter):
-#                 if row_data[nonedata] =='None':
-#                     row_data[nonedata]=''
-#                     print ("found none")
-#             #before clean_excel_item_fattal_code 0   
-#             if not row_data[row_counter] =='None' and (first_run == False) :
-#                 #before clean_excel_item_fattal_code 
-#                 if row_data[row_counter].isnumeric:
-#                     item_fattal_code_check = row_data[row_counter]
-#                     clean_excel_item_fattal_code(item_fattal_code_check,skip)
-#                     print (skip, " num ", row_data[row_counter], "=item fattal code ", row_counter, "=row counter" )
-
-#                 #before clean_excel_item_name  1
-#                 if row_data[row_counter + 1].isalpha:
-#                     item_name_check= row_data[row_counter+1]
-#                     print ("before calling function= ", skip, " item name= ", item_name_check)
-#                     clean_excel_item_name(item_name_check,skip)
-#                     print (skip, " after fiunction ", row_data[row_counter], "=item name ", row_counter, "=row counter" )
-#                 #before clean_excel_sub_category_name   2            
-#                 # if (row_data[row_counter + 2]).isalnum:
-#                 #     sub_category_name= row_data[row_counter+2]
-#                 #     clean_excel_sub_category_name(sub_category_name,skip)
-#                 #     print (skip, " sub+_category ", row_data[row_counter+2], "=sub category ", row_counter, "=row counter" )   
-#                 #     print (skip, " alpha")
-                
-#                 # #before suplier name   3
-#                 # if (row_data[row_counter + 3].isalnum:
-#                 #     supplliers_name= row_data[row_counter+3]
-#                 #     clean_excel_supplliers_name(supplliers_namek,skip)
-#                 #     #print (skip, " alpha ", row_data[row_counter], "=item name ", row_counter, "=row counter" )   
-#                 #     #print (skip, " alpha")
-
-#                 # #before suppliers_fattal_code  4 - no need to be clean. can be duplicate in same row input
-#                 # if (row_data[row_counter + 4].isalnum:
-#                 #     suppliers_fattal_code= row_data[row_counter+3]
-#                 #     #clean_excel_suppliers_fattal_code(suppliers_fattal_code,skip)
-#                 #     #print (skip, " alpha ", row_data[row_counter], "=item name ", row_counter, "=row counter" )   
-#                 #     #print (skip, " alpha")
-                
-                
-                
-#                 if skip == False:
-#                     print(type(row_data[row_counter]), " ", row_data[row_counter])
-#                     item_fattal_code_converted = int(row_data[row_counter])
-#                     _, created = Stock.objects.update_or_create(
-#                         item_fattal_code=item_fattal_code_converted,
-#                         item_name= row_data[row_counter+1],
-#                         sub_category_name=row_data[row_counter+2],
-#                         suppliers_fattal_code= row_data[row_counter+4],
-#                         category_name='',
-#                         description='',
-                        
-
-#                     )
-
-#                 if sskip == False:
-#                     _, created = SupplierInformation.objects.update_or_create(
-#                         suppliers_name=row_data[row_counter+3]
- 
-#                    ) 
-#                 if skip == True:
-#                     skip = False
-#                 if sskip == True:
-#                     sskip = False
-#             first_run = False
-#             row_counter = 0            
-            
-
 
         #print(excel_data[1])
         #print (excel_data[1][4])
         # reading a cell
         #print(worksheet["A1"].value)
 
-        # return render(request, 'excel_upload1.html', {"excel_data":excel_data})
-
+        return render(request, 'excel_upload1.html', {"excel_data":excel_data})
+    
 
 
 
@@ -609,71 +479,6 @@ def import_excel_view(request):
 #         print(worksheet["A1"].value)
 
 #     return render(request, 'excel_upload.html', {"excel_data":excel_data})
-
-
-
-
-#***
-# def import_excel_view(request):
-#     form=import_excel( request.FILES)
-#     error=''
-#     error1=''
-#     if 'GET'== request.method: 
-#        return render(request,'excel_upload.html', {})
-#     else:
-#         try:
-#             excel_file = request.FILES["file"]
-#             print ("### \n",excel_file)
-            
-#         except:
-            
-#             excel_file = 'None'
-#             print ("### \n",excel_file)
-#             #messages.error(request, "This is not a valid file format (only csv or excel xlsx")
-#             #return HttpResponse("boom")
-#             error1="You must upload excel file"
-#             context={
-#                 "error1":error1,
-
-#             }
-#             return render(request,'excel_upload.html', context)
-    
-#     if not excel_file.name.endswith('.xlsx'):
-#         error="This is not a valid File"
-#         context={
-#             "error":error,
-
-#         }
-#         return render(request,'excel_upload.html', context)
-#     else:
-#      # you may put validations here to check extension or file size
-#         print ("before wb ")
-#         wb = openpyxl.load_workbook(excel_file)
-
-    
-#     print ("form= ",form)
-#     print (excel_file)
-    
-# #    #if request.method=='POST':
-# #     #if not file_data.name.endswith('.xlsx'):   
-    
-        
-        
-      
-
-#     context={
-#         "form":form,
-
-
-#     }
-
-#     print ("not fell in upload ")
-#     return render(request, "excel_upload.html", context)
-
-
-
-
-    
     
 
 
