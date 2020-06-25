@@ -1,0 +1,41 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title> Lproject </title>
+{% comment %}   
+    {% include 'navbar.html' %}
+    <br><hr />
+    {% include 'indexb.html'%}
+    <br><hr /> {% endcomment %}
+    {% include 'indexc.html'%}
+   
+    <br><hr />
+   <head>
+       <!--  loading  CSS files -->
+{% comment %} 
+<link href="{% static 'styles.css' %}" rel="styles">
+<link href="{% static 'styles.css' %}" rel="stylesheet" > 
+<link href="{% static 'stylesb.css' %}" rel="stylesheet" >    {% endcomment %}
+<link href="{% static 'stylesc.css' %}" rel="stylesheet" >
+   
+  </head>
+
+</head>
+
+
+<body>
+   
+    {%block content%}
+        blah blah blah from base.html
+    
+
+    {% endblock %}
+
+
+</body>
+
+</style> |
+</html>

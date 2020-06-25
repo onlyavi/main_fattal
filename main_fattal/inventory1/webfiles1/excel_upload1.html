@@ -32,7 +32,7 @@
 
 {%else%}
 {{order}}
-<p>only accept CSV file </p>
+<p>Only import csv or xlsx file, (make sure the fields are in correct order)</p>
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     
@@ -44,7 +44,12 @@
 
 
 {% endif %}
-
+{% for row in excel_data %}
+            {% for cell in row %}
+                {{ cell }}&nbsp;&nbsp;
+            {% endfor %}
+            <br>
+        {% endfor %}
 {% endblock %}
 
 {% comment %} 
