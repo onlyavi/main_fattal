@@ -1,14 +1,16 @@
 from django import forms
-from .models import Stock, SupplierInformation
+from .models import Stock, SupplierInformation, StockTemp
 import io
 import csv
 from django.contrib.auth.models import User
+from history0.models import StockHistory
 
 class StockCreateForm(forms.ModelForm):
     class Meta:
         model=Stock
+        
         #The fields I want to use
-        fields=['category_name', 'item_fattal_code', 'item_name', 'quantity_item', 'item_unit_kind','description']
+        fields=['category_name', 'item_fattal_code', 'item_name', 'quantity_item', 'item_unit_kind', 'description']
     
     def clean_item_name(self):
         item_name = self.cleaned_data.get('item_name')
@@ -290,10 +292,53 @@ class import_excel(forms.Form):
     print ("in class import_excel")
     print (file_data)
 
+   
+        
+class StockIssueForm(forms.ModelForm):
+    class Meta:
+        model=StockTemp
+        #his_model=StockHistory
+        # fields=[ 'item_fattal_code', 'item_name', 'issue_to_transfer', 'issue_quantity_transfer', 'item_unit_kind','description']
+        # fieldsh=['transfer_towhomh']
+        fields=[ 'item_fattal_code_issue', 'item_name_issue']
+
+
+    def clean_item_fattal_code_issue(self):
+        #print ("in clean def")
+        item_name_issue = self.cleaned_data.get('item_name_issue')
+        item_fattal_code_issue =self.cleaned_data.get('item_fattal_code_issue')
+        
+        
+        if (not item_name_issue) and (not item_fattal_code_issue):
+            raise forms.ValidationError('You must fill at least one field ITEM CODE or ITEM NAME ')
+           
+                
+        for instance in Stock.objects.all():  
+            #print ("item_fattal_code_issue= ",item_fattal_code_issue )
+            #print ("instance.item_fattal_code=", instance.item_fattal_code)  
+            if (str(item_fattal_code_issue) == str(instance.item_fattal_code)):
+                item_fattal_code_issue = instance.item_fattal_code
+                StockTemp.item_name_issue = instance.item_name
+               
+             #   print ("$$ in IF item_fattal_code_issue=== ",item_fattal_code_issue )
+              #  print (instance.item_name)
+                StockTemp.formisok=True
+                return item_fattal_code_issue
+        
+
+   
+
+        
+        return item_fattal_code_issue
 
 
 
 
+def cleanme(x):
+    print(x)
+    x+=1
+    return x
+        
 
 
         

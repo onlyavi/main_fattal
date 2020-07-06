@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 9192e2d5c67603f940e54bd2feb721083b44c1a4
 {%extends 'base.html'%}
 {%load crispy_forms_tags   %}
 {% load  static %}
 
 {%block content%}
 
-<<<<<<< HEAD
 <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
 
 
@@ -58,39 +53,11 @@
 
 {% endif %}
 {% for row in excel_data %}
-=======
-<html>
-    <head>
-        <title>
-            Excel file upload and processing : Django Example : ThePythonDjango.Com
-        </title>
-    </head>
-    <body style="margin-top: 30px;margin-left: 30px;">
-        <form method="post" enctype="multipart/form-data">
-        
-            {% csrf_token %}
-            <input type="file"
-                   title="Upload excel file"
-                   name="excel_file"
-                   style="border: 1px solid black; padding: 5px;"
-                   required="required">
-            <p>
-            <input type="submit"
-                   value="Upload"
-                   style="border: 1px solid green; padding:5px; border-radius: 2px; cursor: pointer;">
-        </form>
-
-        <p></p>
-        <hr>
-
-        {% for row in excel_data %}
->>>>>>> 9192e2d5c67603f940e54bd2feb721083b44c1a4
             {% for cell in row %}
                 {{ cell }}&nbsp;&nbsp;
             {% endfor %}
             <br>
         {% endfor %}
-<<<<<<< HEAD
 {% endblock %}
 
 {% comment %} 
@@ -102,9 +69,3 @@
     <button type="submit">Upload</button>  
 
 </form> {% endcomment %}
-=======
-
-        {% endblock %}
-    </body>
-</html>
->>>>>>> 9192e2d5c67603f940e54bd2feb721083b44c1a4
