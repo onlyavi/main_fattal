@@ -28,11 +28,18 @@ class Stock(models.Model):
     quantity_item= models.DecimalField(default='0',decimal_places=0,max_digits=1000,blank=True)
     quantity_min= models.DecimalField(default='0',decimal_places=0,max_digits=1000,blank=False)
     quantity_max= models.DecimalField(default='999999999',decimal_places=0,max_digits=1000,blank=False)
+<<<<<<< HEAD
     item_fattal_code_issue= models.DecimalField(default='0',decimal_places=0,max_digits=1000,blank=True)
 
     issue_to=models.CharField (max_length=50, blank=True, null=True)
     issue_quantity_transfer=models.DecimalField(default='0',decimal_places=0,max_digits=1000,blank=True)
     item_name_issue=models.CharField(max_length=50, blank=True, null=True)
+=======
+
+    hotel_name_transfer=models.CharField (max_length=50, blank=True, null=True)
+    hotel_quantity_transfer=models.IntegerField(default='0', blank=True, null=True)
+    item_transfer_to=models.CharField(max_length=50, blank=True, null=True)
+>>>>>>> 9192e2d5c67603f940e54bd2feb721083b44c1a4
     item_transfer_quantity=models.CharField(max_length=50,blank=True, null=True)
     alchol_color=models.CharField(max_length=50, blank=True,null=True)
     alchol_kind=models.CharField(max_length=50,blank=True, null=True)
@@ -49,6 +56,7 @@ class Stock(models.Model):
     suppliers_item_unit_kind=models.CharField(max_length=50, blank=True, null=True, choices=suppliers_unit_kind_choice)
     suppliers_fattal_code=models.CharField(max_length=50, blank=True, null=True, choices=suppliers_unit_kind_choice)
   
+<<<<<<< HEAD
     image=models.ImageField(upload_to='images/') 
     
 class StockTemp(models.Model):
@@ -70,6 +78,11 @@ class StockTemp(models.Model):
     item_transfer_quantity=models.CharField(max_length=50,blank=True, null=True)
     formisok=models.BooleanField(default=False) 
     formempty=models.BooleanField(default=False)
+=======
+    image=models.ImageField(upload_to='images/')  
+    
+    
+>>>>>>> 9192e2d5c67603f940e54bd2feb721083b44c1a4
     
     
 

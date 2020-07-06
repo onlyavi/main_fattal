@@ -1,16 +1,25 @@
 from django import forms
+<<<<<<< HEAD
 from .models import Stock, SupplierInformation, StockTemp
 import io
 import csv
 from django.contrib.auth.models import User
 from history0.models import StockHistory
+=======
+from .models import Stock, SupplierInformation
+>>>>>>> 9192e2d5c67603f940e54bd2feb721083b44c1a4
 
 class StockCreateForm(forms.ModelForm):
     class Meta:
         model=Stock
+<<<<<<< HEAD
         
         #The fields I want to use
         fields=['category_name', 'item_fattal_code', 'item_name', 'quantity_item', 'item_unit_kind', 'description']
+=======
+        #The fields I want to use
+        fields=['category_name', 'item_fattal_code', 'item_name', 'quantity_item', 'item_unit_kind','description']
+>>>>>>> 9192e2d5c67603f940e54bd2feb721083b44c1a4
     
     def clean_item_name(self):
         item_name = self.cleaned_data.get('item_name')
@@ -41,6 +50,7 @@ class StockCreateForm(forms.ModelForm):
                 raise forms.ValidationError('item code '+ str(item_fattal_code) +' Already exist')
         return item_fattal_code
 
+<<<<<<< HEAD
 # class UploadFileForm(forms.Form):
 #     title = forms.CharField(max_length=50)
 #     file = forms.FileField()
@@ -196,6 +206,8 @@ class StockCreateForm(forms.ModelForm):
 
 
     
+=======
+>>>>>>> 9192e2d5c67603f940e54bd2feb721083b44c1a4
 
     
 
@@ -279,6 +291,7 @@ class StockUpdateForm(forms.ModelForm):
     #     # return item_fattal_code   
 
 
+<<<<<<< HEAD
 class import_csv(forms.Form):
     file_data= forms.FileField()
 
@@ -339,6 +352,9 @@ def cleanme(x):
     x+=1
     return x
         
+=======
+
+>>>>>>> 9192e2d5c67603f940e54bd2feb721083b44c1a4
 
 
         
