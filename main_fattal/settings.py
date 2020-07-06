@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'inventory1',
     'general',
+    'history0',
+   
+  
     'crispy_forms' #for forms looks better
     
     

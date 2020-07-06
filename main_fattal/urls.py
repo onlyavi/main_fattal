@@ -17,14 +17,17 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import  static
-from inventory1.views import homepage_view, about_view, add_newitem_view, list_items_view, update_items,delete_items, under_construction, StockFSearch_view,    import_excel_view
+from inventory1.views import homepage_view, about_view, add_newitem_view, list_items_view, update_items,delete_items, under_construction, StockFSearch_view,  import_excel_view
+from inventory1.views import test_forms1, item_issue_view
 
 
 urlpatterns = [
+    
     path('admin/', admin.site.urls),
     path('', homepage_view, name='home'),
     path('about/', about_view, name='about'),
     path('add_newitem/', add_newitem_view, name='add_newitem'),
+    path('testforms/', test_forms1, name='test_forms1'),
     path('list_items/', list_items_view, name='list_items_view'),
     #path('excel_upload/', excel_import_example, name='excel_import_example'),
     path('update_items/<str:pk>/', update_items, name="update_items"),
@@ -36,6 +39,7 @@ urlpatterns = [
    # path('MEDIA_URL/', settings.MEDIA_URL ),
   
     path('excel_upload/', import_excel_view, name='import_excel_view'),
+    path('index_issue/', item_issue_view, name='item_issue_view'),
    # path('excel_upload1/', csv_view, name='csv_view'),
 ] + static (settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
   

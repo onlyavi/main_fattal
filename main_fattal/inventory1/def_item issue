@@ -1,0 +1,107 @@
+def item_issue_view(request):
+    header ='Full Item Search'
+    queryset=Stock.objects.all()
+    form = StockIssueForm(request.POST or None)
+    #print ("item code:", (form['item_fattal_code'].value()))
+    #print ("item name",(form['item_name'].value()))
+    
+    
+    
+    # if (not form['item_name_issue'].value() and not form['item_fattal_code_issue'].value())  or ( form['item_name_issue'].value() and form['item_fattal_code_issue'].value() ) :
+    #     #print ("both empty, both not empty")
+    #     return redirect ("/index_issue")
+    #print ("before if\nqueryset=",queryset, " \n", request.method)
+    
+    if request.method == 'POST' and not form['item_fattal_code_issue']==None:
+        form=StockIssueForm(request.POST)
+        if form.is_valid():
+            form.save()
+            print ("**saved")
+            return redirect('/index_issue')
+    
+    #     print ("in if")
+    #     print (form['item_fattal_code_issue'].value())
+    #     print(Stock.objects(item_fattal_code))
+    #     queryset = Stock.objects.filter(item_fattal_code__iexact=form['item_fattal_code_issue'].value(),                 
+                                     
+    #    )
+
+    
+
+
+
+    # if request.method == 'POST' and form['item_name_issue'].value():
+    #     form=StockIssueForm(request.POST)
+    #     if form.is_valid():
+    #         form.save()
+    #         return redirect('/index_issue')
+    
+
+
+        # queryset = Stock.objects.filter(item_name__iexcat=form['item_name_issue'].value(),
+        # )
+                                        
+         
+        
+        #queryset_output = queryset 
+
+        #print (form['item_fattal_code'].value())
+        #print(len(queryset))
+                    
+
+    
+    context={
+        "header": header,
+        "queryset":queryset,
+        "form": form,
+        
+
+        
+    }
+
+    #print (queryset)
+
+    return render(request, 'index_issue.html',context)   
+
+
+
+def list_items_view(request):
+    header ='List of items'
+    searchtitle= "Search Item"
+    form = StockSearchForm(request.POST or None)
+    queryset = Stock.objects.all()
+    context ={
+        "header": header,
+        "queryset":queryset,
+        "form": form,
+                          
+    }
+    if request.method == 'POST':
+        queryset = Stock.objects.filter(#item_fattal_code__icontains=form['item_fattal_code'].value(),
+                                         category_name__icontains=form['category_name'].value(),
+                                         item_name__iexact=form['item_name'].value(),
+                                                                                                                                                         
+ 
+        )
+    
+           
+    if request.method == 'POST':
+        queryset = Stock.objects.filter(item_fattal_code__icontains=form['item_fattal_code'].value(),
+                                         #category_name__icontains=form['category_name'].value(),
+                                         #item_name__iexact=form['item_name'].value(),
+                                                                                                                                                         
+ 
+        )
+    
+      
+    context ={
+        "form": form,
+        "header": header,
+        "queryset": queryset,
+        "searchtitle": searchtitle
+      
+                
+    }
+    
+    return render(request, "list_items.html", context)
+

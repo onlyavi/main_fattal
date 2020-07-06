@@ -1,7 +1,8 @@
 import csv, io   #for csv
 from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpRequest
-from .forms import StockCreateForm, SuppliersCreateForm, StockSearchForm,StockUpdateForm, StockFullSearchForm, import_csv, import_excel
+from .forms import StockCreateForm, SuppliersCreateForm, StockSearchForm,StockUpdateForm, StockFullSearchForm, import_csv, import_excel, StockIssueForm,cleanme
+
 from .models import *
 from .clean_import_files import *
 from django.contrib import messages
@@ -38,9 +39,9 @@ def delete_items(request,pk):
 # 
 
 def about_view(request):
-    title='Welcome to my first Django project'
-    #today = datetime.now().date()
-    aboutmyself= "My name is Avi Sivan. My email onlyavi@gmail.com"
+    aboutmyself='Welcome to my first Django project'
+    today = datetime.now().date()
+    title= "My name is Avi Sivan. My email onlyavi@gmail.com"
     context= {
         "title":title,
         "today": today,
@@ -82,7 +83,58 @@ def update_items(request,pk):
         "form":form,
         
     }
-    return render(request, 'add_newitem.html',context)       
+    return render(request, 'add_newitem.html',context)    
+
+def item_issue_view(request):
+    header ='Full Item Search'
+    queryset=StockTemp.objects.all()
+    form = StockIssueForm(request.POST or None)
+    
+    for instance in StockTemp.objects.all():  
+            if (instance.item_fattal_code_issue ==0):
+                instance.delete()
+   
+    
+    
+    if request.method == 'POST' and not form['item_fattal_code_issue']==None:
+        form=StockIssueForm(request.POST)
+        f=request.POST.get('item_fattal_code_issue')
+
+       
+        if form.is_valid():
+            #form.save(commit=False)
+            if StockTemp.formisok==True:
+                form.save()
+                
+                
+            else:
+                print("errrrrr")
+
+
+            for instance2 in StockTemp.objects.all():
+                for instance1 in Stock.objects.all():
+                    if str(instance2.item_fattal_code_issue) == str(instance1.item_fattal_code):
+                        
+                        instance2.item_name_issue = instance1.item_name
+                        #print (instance2.item_fattal_code_issue," found ", instance2.item_name_issue )
+                        instance2.formisok=True
+                        instance2.save()
+
+    queryset=StockTemp.objects.all()
+    
+    context={
+        "header": header,
+        "queryset":queryset,
+        "form": form,
+        
+    }
+
+    #to delete from databse
+    # for instance in StockTemp.objects.all():
+    #     instance.delete()
+
+    
+    return render(request, 'index_issue.html',context)   
 
 
 
@@ -123,8 +175,78 @@ def list_items_view(request):
       
                 
     }
-    
+    print("listview:")
+    for instance in Stock.objects.all():
+        print (instance.item_fattal_code, " issu:", instance.item_fattal_code_issue)
+    print("end listview")
     return render(request, "list_items.html", context)
+
+
+
+
+#EVERYTHING in the comment is also work also in the htm
+def test_forms1(request):
+    cars=models.CharField(max_length=50, blank=True, null=True) 
+
+    dic1=[]
+    vehicle=[]
+    date= models.DateField()
+    title=models.CharField(max_length=50, blank=True, null=True) 
+    
+    
+ 
+  
+    print (request.GET)
+    input2= request.GET.getlist('vehicle')
+    title= request.GET.getlist('title')
+    date_input=request.GET.getlist('date')
+    print ("input2= ", input2)
+    print ("title= ", title)
+    print ("date= ",date_input)
+    if request.GET:
+        input1=request.GET.getlist('cars')
+        #input2=input1[0]
+        #print(len(input1))
+        print ("input1: ",input1)
+        
+        for instance in range(len(input1)):
+            print("cars #", instance, " =",input1[instance])
+
+        
+        for instance in input1:
+            print(instance)
+        
+        for instance in input2:
+            print (instance)
+        
+        print ("len=", len(input1))
+        if input1=='saab' or input1=='opel':
+            return HttpResponse ("<h1>Great Choice </h1>")
+        else:
+            
+            return redirect("home")
+
+    
+    #print(input2)
+    #input1=input2.
+    #print (input1)
+    title='a'
+    context={
+        'title':title,
+        'dic1':dic1,
+        'cars':cars,
+        'vehicle':vehicle,
+        'date':date
+      
+       
+
+    }
+
+    return render(request, "testforms.html",context)
+
+
+
+
 
 
 
@@ -132,6 +254,15 @@ def StockFSearch_view(request):
     header ='Full Item Search'
     form = StockFullSearchForm(request.POST or None)
     queryset = Stock.objects.all()
+
+    if request.method == 'POST':
+        queryset = Stock.objects.filter(item_fattal_code__icontains=form['item_fattal_code'].value(),
+                                         
+                                         item_name__iexact=form['item_name'].value(),
+                                                                                                                                                         
+ 
+        )
+    
   
     context ={
         "header": header,
@@ -211,6 +342,8 @@ def StockFSearch_view(request):
 
 
 def import_excel_view(request):
+
+
     form=import_excel( request.FILES)
     error_upload=''
     error=''

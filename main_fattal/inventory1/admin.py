@@ -7,7 +7,7 @@ from .forms import StockCreateForm, SuppliersCreateForm
 class StockCreateAdmin(admin.ModelAdmin):
 #BUILTIN ADMIN
 # what I want to dis'catagory_name','item_name','item_fattal_code','item_barcode_external','quantity_item'
-    list_display = ['category_name','item_name','item_fattal_code','item_barcode_external','quantity_item','description' ]
+    list_display = ['category_name','item_name','item_fattal_code','item_barcode_external','quantity_item', 'item_fattal_code_issue','description' ]
     form = StockCreateForm
  
     list_filter = ['category_name']   #filter items by catagory
