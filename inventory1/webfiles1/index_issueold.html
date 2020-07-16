@@ -1,0 +1,30 @@
+
+{%extends 'base.html'%}
+{%load crispy_forms_tags   %}
+{% load  static %}
+
+<html>
+
+<head>
+{%block content%}
+
+
+<title>160 Pixel Left Column, 2/3 x 1/3 Main Column.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" >
+
+<link href="{% static 'styles_issue.css' %}" rel="stylesheet" >
+</head>
+<body>
+
+      <form method='POST' action=''>{% csrf_token %}
+      <b> {{form }} </b>
+        <p><input type="submit" value='Search For item to issue'/>
+      
+      </form>
+
+
+  
+   
+</body>
+{% endblock %}
+</html>

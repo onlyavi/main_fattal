@@ -14,12 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import  static
 from inventory1.views import homepage_view, about_view, add_newitem_view, list_items_view, update_items,delete_items, under_construction, StockFSearch_view,  import_excel_view
 from inventory1.views import test_forms1, item_issue_view
-
+import inventory1.urls 
 
 urlpatterns = [
     
@@ -40,6 +40,7 @@ urlpatterns = [
   
     path('excel_upload/', import_excel_view, name='import_excel_view'),
     path('index_issue/', item_issue_view, name='item_issue_view'),
+    path('', include ('inventory1.urls'))
    # path('excel_upload1/', csv_view, name='csv_view'),
 ] + static (settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
   

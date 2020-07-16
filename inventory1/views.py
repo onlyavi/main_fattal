@@ -1,8 +1,9 @@
 import csv, io   #for csv
 from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpRequest
-from .forms import StockCreateForm, SuppliersCreateForm, StockSearchForm,StockUpdateForm, StockFullSearchForm, import_csv, import_excel, StockIssueForm,cleanme
+from .forms import StockCreateForm, SuppliersCreateForm, StockSearchForm,StockUpdateForm, StockFullSearchForm, import_csv, import_excel, StockIssueForm,cleanme,StockIssueForm2
 
+from inventory1.issue_functions import *
 from .models import *
 from .clean_import_files import *
 from django.contrib import messages
@@ -16,9 +17,9 @@ from django.views.generic import FormView
 def homepage_view(request):
     #this is the title for now
     #print (request.user)
-    a=10
-    b=7
-    print (int(a / b))
+    # a=10
+    # b=7
+    # print (int(a / b))
     today = datetime.now().date()
     context= {
      
@@ -89,51 +90,213 @@ def item_issue_view(request):
     header ='Full Item Search'
     queryset=StockTemp.objects.all()
     form = StockIssueForm(request.POST or None)
+    #delete=models.CharField(max_length=50, blank=True, null=True) 
+    delete=models.TextField ( blank=True, null=True)
+    delete_items=[]
+    quantity_issue=[]
+    issue_to1=[]
+    update_form=[]
+    save_update_form=[]
+    iss=[]
+    iss2=[]
+    iss=[]
+    item_unit_kind_issue=[]
+    del item_unit_kind_issue[:]
+    item_unit_kind_issue_green=[]
+    del item_unit_kind_issue_green[:]
+    proceed_with_form=[]
+    its_dup=False 
+    item_unit_kind_issue_update=[]
+    del item_unit_kind_issue_update[:]
+    quntity_update=[]   
+    #item_unit_kind_issue_update.clear()
+    #quntity_update.clear()    
+    list0={"a":"a", "b":"b","c":"c"}
+  
+    the_choices={}
+    tuple_convert = StockTemp.item_unit_kind_choice_issue
     
-    for instance in StockTemp.objects.all():  
-            if (instance.item_fattal_code_issue ==0):
-                instance.delete()
-   
+    for a,b in tuple_convert:
+        the_choices.setdefault(a,[]).append(b)
+
+
+    form_kind= StockIssueForm2(request.POST or None)
+    alchol_choice = TemplateList.objects.all()
+    #delete lines
+    for instance in StockTemp.objects.all():
+        if (instance.item_fattal_code_issue ==0):
+            instance.delete()
+        instance.DateIssue=datetime.now().date()
+        
+        instance.save()
+
     
     
     if request.method == 'POST' and not form['item_fattal_code_issue']==None:
         form=StockIssueForm(request.POST)
         f=request.POST.get('item_fattal_code_issue')
-
+        print ("f= ",f)
        
         if form.is_valid():
             #form.save(commit=False)
             if StockTemp.formisok==True:
+                print ("formisok= ", StockTemp.formisok)
                 form.save()
+              
+
+
                 
                 
             else:
                 print("errrrrr")
 
+            
+
+            
+               
+
 
             for instance2 in StockTemp.objects.all():
                 for instance1 in Stock.objects.all():
                     if str(instance2.item_fattal_code_issue) == str(instance1.item_fattal_code):
-                        
+                        # 
                         instance2.item_name_issue = instance1.item_name
+                        
+                        if instance2.item_unit_kind_issue ==None:
+                            print ("only than update quantity kind:  ", instance2.item_unit_kind_issue)
+                            instance2.item_unit_kind_issue = instance1.item_unit_kind
                         #print (instance2.item_fattal_code_issue," found ", instance2.item_name_issue )
                         instance2.formisok=True
                         instance2.save()
-
+           
+        else:
+            its_dup= True
     queryset=StockTemp.objects.all()
     
     context={
         "header": header,
         "queryset":queryset,
         "form": form,
-        
+        "delete":delete,
+        "delete_items":delete_items,
+        "quantity_issue":quantity_issue,
+        "issue_to1":issue_to1,
+        "item_unit_kind_issue":item_unit_kind_issue,
+        "item_unit_kind_issue_green":item_unit_kind_issue_green,
+        "form_kind":form_kind,
+        "save_update_form":save_update_form,
+        "update_form":update_form,
+        "proceed_with_form":proceed_with_form,
+        "its_dup":its_dup,
+        "alchol_choice": alchol_choice,
+        "the_choices":the_choices,
+        "list0":list0,
+ 
     }
+   
+    quntity_update=request.POST.getlist("quantity_issue")
+  
+    issue_to=request.POST.get("issue_to1")
+    issue_to_whom=request.POST.get("issue_to_whom")
+    item_unit_kind_issue_update=request.POST.getlist("item_unit_kind_issue")
+    item_unit_kind_issue_green=request.POST.getlist("item_unit_kind_issue_green")
+    
 
-    #to delete from databse
-    # for instance in StockTemp.objects.all():
-    #     instance.delete()
+    delete_items=request.POST.getlist("delete_items")
+    # print (len(delete_items),"delete_items= ", delete_items )
+    delete_checked_items(*delete_items)
 
     
+    update_the_form_check = False
+    update_main_db_check =False
+    
+
+    print ("\nBefore ****   function   start")
+    print ("item_fattal_code_issue= ",item_unit_kind_issue )
+    print ("issue_to= ",issue_to )
+    print ("issue_to_whom= ",issue_to_whom )
+    print ("item_unit_kind_issue", item_unit_kind_issue)
+    print ("item_unit_kind_issue GREEN", item_unit_kind_issue_green)
+    print ("item_unit_kind_issue update= ",item_unit_kind_issue_update )
+    print ("quantity update= ", len(quntity_update) ," ", quntity_update)
+    print ("**** ")
+    print ("@@@@")
+    for i in StockTemp.objects.all():
+        print (i.id, end=' ')
+        print (i.issue_quantity_transfer, end=' ')
+        print (i.item_unit_kind_issue, end=' ')
+        print (i.item_fattal_code_issue)
+       
+    print ("Before  @@@@  function, end")
+    
+    
+    
+    
+    if (request.POST.get("update_main_db") != None):
+        update_main_db_check = True
+    else:
+        update_main_db_check =False
+
+    if (request.POST.get("update_the_form") != None):
+        update_the_form_check = True
+        print ("before function in the IFFFF ", update_the_form_check, update_main_db_check, "\n", item_unit_kind_issue_update)
+        update_form_def (update_the_form_check, update_main_db_check, quntity_update, item_unit_kind_issue_update)
+
+
+
+    clear_list(item_unit_kind_issue_update)
+    clear_list(quntity_update)
+
+    # print ("\n****  After function")
+    # print ("issue_to= ",issue_to )
+    # print ("issue_to_whom= ",issue_to_whom )
+    # print ("item_unit_kind_issue", item_unit_kind_issue)
+    # print ("item_unit_kind_issue update= ",item_unit_kind_issue_update )
+    # print ("quantity update= ", len(quntity_update) ," ", quntity_update)
+    # print ("**** ")
+    # print ("@@@@")
+    # for i in StockTemp.objects.all():
+    #     print (i.id, end=' ')
+    #     print (i.issue_quantity_transfer, end=' ')
+    #     print (i.item_unit_kind_issue)
+       
+    # print ("@@@@ After function")
+    
+    
+    
+    #t=request.POST.get(all)
+    #print("q post: \n",q)
+    #print ("del form presses",z, len(z) )
+    #q=request.GET.getlist("quantity_issue")
+    #print("q get: \n",q)
+    #print ("t kind ",t)
+    #z=request.GET.getlist('delete_item')
+ 
+    #reset DELETE the data of the form from DB 
+    
+    reset_form=  request.POST.get('delete')
+    print("reset_form ",reset_form)
+    if reset_form =="D" or reset_form=="DELETE" or reset_form =="d":
+        for instance in StockTemp.objects.all():
+            instance.delete()
+
+
+    
+    # print ("how many recordes: " , len(StockTemp.objects.all()))
+
+    # print ("---choices")
+    # tt=StockTemp.item_unit_kind_choice_issue
+    # f= dict(tt)
+    # print (f)
+    # print (type(f))
+    # if "grams" in f:
+    #     print ("exist")  
+
+    # for a,b in tt:
+    #     if b == "grams":
+    #         print ("wonderful")
+
+
     return render(request, 'index_issue.html',context)   
 
 
@@ -527,12 +690,6 @@ def import_excel_view(request):
 
 
 
-
-
-
-
-
-
 # def import_excel_file(request):
 #     prompt = {
 #         'order': 'MAKE SURE that this is csv or xlsx file, and the fields are in correct order'
@@ -807,7 +964,10 @@ def import_excel_view(request):
 
 
     
-    
+def add_alchol_type(request):
+
+    return render(request, "add_aclhol_type.html", {} )
+
 
 
     

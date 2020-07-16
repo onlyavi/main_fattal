@@ -1,5 +1,5 @@
 from django import forms
-from .models import Stock, SupplierInformation, StockTemp
+from .models import Stock, SupplierInformation, StockTemp, TemplateList
 import io
 import csv
 from django.contrib.auth.models import User
@@ -40,6 +40,14 @@ class StockCreateForm(forms.ModelForm):
             if (instance.item_fattal_code == item_fattal_code) and (int(instance.item_fattal_code) < 990000):
                 raise forms.ValidationError('item code '+ str(item_fattal_code) +' Already exist')
         return item_fattal_code
+
+class TemplateListForm(forms.ModelForm):
+    class Meta:
+        model=TemplateList
+        
+        #The fields I want to use
+        fields=['alchol_kind']
+    
 
 # class UploadFileForm(forms.Form):
 #     title = forms.CharField(max_length=50)
@@ -194,14 +202,6 @@ class StockCreateForm(forms.ModelForm):
  
     
 
-
-    
-
-    
-
-
-   
-
     
         
 class StockSearchForm(forms.ModelForm):
@@ -293,7 +293,14 @@ class import_excel(forms.Form):
     print (file_data)
 
    
-        
+class StockIssueForm2(forms.ModelForm):
+    class Meta:
+        model=StockTemp
+        #his_model=StockHistory
+        # fields=[ 'item_fattal_code', 'item_name', 'issue_to_transfer', 'issue_quantity_transfer', 'item_unit_kind','description']
+        # fieldsh=['transfer_towhomh']
+        fields=['item_unit_kind_issue']
+
 class StockIssueForm(forms.ModelForm):
     class Meta:
         model=StockTemp
@@ -304,34 +311,50 @@ class StockIssueForm(forms.ModelForm):
 
 
     def clean_item_fattal_code_issue(self):
-        #print ("in clean def")
+        print ("in clean def")
+       
         item_name_issue = self.cleaned_data.get('item_name_issue')
         item_fattal_code_issue =self.cleaned_data.get('item_fattal_code_issue')
         
         
         if (not item_name_issue) and (not item_fattal_code_issue):
+            print ("none entered")
             raise forms.ValidationError('You must fill at least one field ITEM CODE or ITEM NAME ')
-           
-                
+        
+
+        update_the_form=False        
         for instance in Stock.objects.all():  
             #print ("item_fattal_code_issue= ",item_fattal_code_issue )
             #print ("instance.item_fattal_code=", instance.item_fattal_code)  
             if (str(item_fattal_code_issue) == str(instance.item_fattal_code)):
-                item_fattal_code_issue = instance.item_fattal_code
-                StockTemp.item_name_issue = instance.item_name
+                print ("found in orginal Stock DB")
+                for x in StockTemp.objects.all():
+                    if str(item_fattal_code_issue) == str(x.item_fattal_code_issue):
+                        StockTemp.formisok=False
+                        print ("found in new list  issue db:",StockTemp.formisok)
+                        raise forms.ValidationError(str(item_fattal_code_issue) +' Already exist')
+                   
+                
+                #item_fattal_code_issue = instance.item_fattal_code
+                #StockTemp.item_name_issue = instance.item_name
                
              #   print ("$$ in IF item_fattal_code_issue=== ",item_fattal_code_issue )
-              #  print (instance.item_name)
+                print (instance.item_name)
                 StockTemp.formisok=True
+                StockTemp.item_fattal_code_issue= instance.item_fattal_code
+                StockTemp.item_name_issue= instance.item_name
+                StockTemp.item_unit_kind_issue= instance.item_unit_kind
+                
+
+
+
                 return item_fattal_code_issue
         
-
-   
-
+    
         
         return item_fattal_code_issue
-
-
+    
+    
 
 
 def cleanme(x):

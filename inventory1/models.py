@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 
 # Create your models here.
 
@@ -16,10 +17,11 @@ class Stock(models.Model):
     item_fattal_code_end= models.DecimalField(default='9999999999',decimal_places=0,max_digits=1000,blank=False)
     item_barcode_external = models.CharField(max_length=50, blank=True, null=True)
     item_unit_kind_choice={
+       
         ('kg','kg'),
         ('grams','grams'), 
         ('liters','liters'),
-        ('units in box','unit_in_box'),
+        ('units in box','units in box'),
         ('other','other'),
     }
     
@@ -34,7 +36,7 @@ class Stock(models.Model):
     issue_quantity_transfer=models.DecimalField(default='0',decimal_places=0,max_digits=1000,blank=True)
     item_name_issue=models.CharField(max_length=50, blank=True, null=True)
     item_transfer_quantity=models.CharField(max_length=50,blank=True, null=True)
-    alchol_color=models.CharField(max_length=50, blank=True,null=True)
+    alchol_Sticker=models.CharField(max_length=50, blank=True,null=True)
     alchol_kind=models.CharField(max_length=50,blank=True, null=True)
     description=models.CharField(max_length=50, blank=True, null=True)
     export_to_CSV = models.BooleanField(default=False)
@@ -42,7 +44,7 @@ class Stock(models.Model):
         ('kg','kg'),
         ('grams','grams'),
         ('liters','liters'),
-        ('units in box','unit_in_box'),
+        ('units in box','units in box'),
         ('other','other'),
     }
     
@@ -53,25 +55,31 @@ class Stock(models.Model):
     
 class StockTemp(models.Model):
     
-    # item_unit_kind_choice={
-    #     ('kg','kg'),
-    #     ('grams','grams'), 
-    #     ('liters','liters'),
-    #     ('units in box','unit_in_box'),
-    #     ('other','other'),
-    # }
-    
-    # item_unit_kind=models.CharField(max_length=50, blank=True, null=True, choices=item_unit_kind_choice)  #blank=False a must to use
-    
+  
     item_fattal_code_issue= models.DecimalField(default='0',decimal_places=0,max_digits=1000,blank=True)
-    issue_to=models.CharField (max_length=50, blank=True, null=True)
+    #item_fattal_code_issue=models.CharField (max_length=50, blank=True, null=True)
     issue_quantity_transfer=models.DecimalField(default='0',decimal_places=0,max_digits=1000,blank=True)
     item_name_issue=models.CharField(max_length=50, blank=True, null=True)
-    item_transfer_quantity=models.CharField(max_length=50,blank=True, null=True)
+    item_transfer_to_whom=models.CharField(max_length=50,blank=True, null=True)
+    item_transfer_to=models.CharField(max_length=50,blank=True, null=True)
     formisok=models.BooleanField(default=False) 
     formempty=models.BooleanField(default=False)
+    item_unit_kind_choice_issue={
+        ('kg','kg'),
+        ('grams','grams'), 
+        ('liters','liters'),
+        ('units_in_box','units in box'),
+        ('other','other'),
+    }
+    
+    item_unit_kind_issue=models.CharField(max_length=50, blank=True, null=True, choices=item_unit_kind_choice_issue)  #blank=False a must to use
+    DateIssue=models.DateField(default=date.today)
     
     
+class TemplateList(models.Model):
+    alchol_kind=models.CharField(max_length=50,blank=True, null=True)
+   # Departments=models.CharField(max_length=50,blank=True, null=True)
+
 
     
 class SupplierInformation(models.Model):

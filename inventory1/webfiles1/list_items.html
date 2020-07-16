@@ -66,11 +66,11 @@
             <td>{{instance.item_fattal_code}}</td>
              {% comment %} <td>{{instance.item_name}}</td> {% endcomment %}
            
-            <td><a href="{% url 'update_items' instance.id %}">{{instance.item_name}}</a></td>  
+            <td><a href="{% url 'update_items' instance.id %}">{{instance.item_name}} </a></td>  
             <td>{{instance.quantity_item}}</td>
             <td>{{instance.item_unit_kind}}</td>
         
-            <td><a href="{% url 'delete_items' instance.id %}">DELETE</a></td>  
+            <td><a href="{% url 'delete_items' instance.id %}">DELETE </a></td>  
             <td>{{instance.description}}</td>
 
           </tr>

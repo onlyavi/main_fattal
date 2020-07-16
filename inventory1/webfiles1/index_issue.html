@@ -2,75 +2,305 @@
 {%extends 'base.html'%}
 {%load crispy_forms_tags   %}
 {% load  static %}
-
-<html>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 {%block content%}
+<title>Faux Column CSS Layouts - 2 Column - faux-13-2-col</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
 
-<title>160 Pixel Left Column, 2/3 x 1/3 Main Column.</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" >
+<link href="{% static 'styles.css' %}" rel="stylesheet" >
 
-<link href="{% static 'styles_issue.css' %}" rel="stylesheet" >
+<style>
+.label {
+  color: white;
+  padding: 6px;
+  font-family: Arial;
+  
+  
+}
+.success {background-color: #4CAF50;} /* Green */
+.info {background-color: #2196F3;} /* Blue */
+.warning {background-color: #ff9800;} /* Orange */
+.danger {background-color: #f44336;} /* Red */ 
+.other {background-color: #e7e7e7; color: black;} /* Gray */ 
+</style>
+
+
 </head>
 <body>
+<!-- Begin Wrapper -->
+<div id="wrapper">
+  <!-- Begin Header -->
+  <div id="header"><h1></h1>
+    <form method='POST' action=''>{% csrf_token %}
+     <INPUT TYPE="Text" name="delete" style="width:24%;" PLACEHOLDER="type 'DELETE' to reset all the form"  >
+     
+       <span class="label danger">
+        
+    <INPUT TYPE="Submit" VALUE="Empty form" " >
+       </span>
+     <br><br>
+     </form>
 
-      <form method='POST' action=''>{% csrf_token %}
-      <b> {{form }} </b>
-        <p><input type="submit" value='Search For item to issue'/>
-      
-      </form>
-
-
-
-<div id="doc" class="yui-t1">
-  <div id="hd">
-    <div id="header">
-               <input type="checkbox" id="vehicle1" name="vehicle" value="Bike">
-              <label for="vehicle"> I have a bike</label><br>
-              <input type="checkbox" id="vehicle2" name="vehicle" value="Car">
-              <label for="vehicle"> I have a car</label><br> 
-      
-    </div>
-  
-  </div>
+    <table>
     
-  <div id="bd">
+           
+    <tr>	
+    
+    
+    <td>
+    <form method='POST' action=''>{% csrf_token %}
+     
+    
 
-    <div id="yui-main">
-      <div class="yui-b">
-        <div class="yui-gc">
-          <div class="yui-u first">
-            <div class="content">SideLeft <p>
-            
-              {%for instance in queryset %}
+      Item Fattal Code {{form.item_fattal_code_issue}}  
+      <input type="submit" value='Add'/>
+    </form>
+  </td> 
+  <td>	
+  <form method='POST' action=''>{% csrf_token %}
+     Item Name {{form.item_name_issue}}
+     <input type="submit" value='Add'/>
+
+   </td> </tr>
+  
+
+  </table>
+  
+ {% if its_dup == True%}
+   <h3> <span  class="danger"  >  
+    Field can not be empty OR already Exist 
+     </span> </h3>
+  {% endif %}
+ 
+  </div>
+  <!-- End Header -->
+  <!-- Begin Faux Columns -->
+  <div id="faux">
+    <!-- Begin Left Column -->
+    <div id="leftcolumn">Left Column
+  
+    <p> <br>
+    <input type="Text"   name="issue_to1" value= "" PLACEHOLDER="Issue to?" autocomplete="off">
+      <br><br>
+    <input type="Text"   name="issue_to_whom" value= "" PLACEHOLDER="Issue to whom? Who took?" autocomplete="off" >
+    <br><br><br>
+   
+    <INPUT TYPE="Submit"  name="proceed_with_form" value=" Proceed to excute transefer " style="border-color: green;border-width: 10px">
+    
+      
+    <p>
+   </form>
+  
+
+    </div>
+       
+   
+    <!-- End Left Column -->
+    <!-- Begin Right Column -->
+    <div id="rightcolumn">right column
+ 
+ 
+ <style>   
+ th {
+  text-align: left;
+}    
+</style> 
+
+
+<form method="post"> {% csrf_token %}
+<input type="reset" value="reset form"> 
+<input type="Submit" name="update_the_form" value="update changes">
+<input type="checkbox" id="update_main_db" name="update_main_db" value="update_main_db"
+ <label for="update_main_db">Update main DB with missing quantity kind </label><br><br>
+ <INPUT TYPE="Submit"  id="deleted_items" name="" value="Delete marked items" >
+    <br><br>
+
+ 
+
+<table style="width:auto">
+  <tr>
+    <th>X</th>
+    <th>quantity<br>to move</th> 
+    <th>Quantity<br> Kind</th>
+   
+    <th>Item Name</th>
+     <th>Item Code</th>
+    <th>Date</th> 
+    
+  </tr>
+  <label for="">{{item_fattal_code_issue}}</label> 
+ {%for instance in queryset %}
+ 
+ 
+  <tr>
+      <td>   
+        <input type="checkbox" id="delete_items" name="delete_items" value={{instance.id}}
+      </td>
+
+      <td>
+        <input type="Text" id={{"instance.id"}} name="quantity_issue" value={{instance.issue_quantity_transfer}} autocomplete="off"
+      </td>
+      <td> 
+              {% if instance.item_unit_kind_issue != None and   instance.item_unit_kind_issue != "None" and instance.item_unit_kind_issue != "-----" %}
+            <input type="text" id={{"instance.item_unit_kind_issue"}} name="item_unit_kind_issue" value={{instance.item_unit_kind_issue}} size="8"           <span  class="success" </span>  
+          
                
-                <input type="checkbox" id="items" name="items" value="items">
-                <label for="item"> {{ instance.item_fattal_code_issue }}  {{instance.item_name_issue}}</label><br>
+{% comment %} 
+               <select class="success" name="item_unit_kind_issue" id="item_unit_kind_issue"  >
+                           <option value={{ item_unit_kind_issue }} </option> 
+                   
+            </select>   {% endcomment %}
+{% comment %} 
+            <span  class="success"  name="item_unit_kind_issue"  id={{"instance.item_unit_kind_issue"}} value={{instance.item_unit_kind_issue}}> 
+               <label for="">{{instance.item_unit_kind_issue}}  </label>
+               </span>   {% endcomment %}
 
-            
-                          
+            {%else%}
+
+
           
+              <select class="warning" name="item_unit_kind_issue" id="item_unit_kind_issue"  >
+               <option value="0" selected><option>
+               
+               {%for key in the_choices%}
+               
+              <option value="{{key}}">{{key }}   <option>
+                 {% endfor %}  
+              </select>
+   
+              {% endif %}
           
-              {% endfor %}
-             </div>
-          </div>
-          <div class="yui-u">
-            <div class="content">Content Here</div>
-          </div>
-        </div>
-      </div>
+            {% comment %} {% if instance.item_unit_kind_issue != None and   instance.item_unit_kind_issue != "None" and instance.item_unit_kind_issue != "-----" %}
+            {% endcomment %}
+{% comment %}          
+             <select class="success" name="item_unit_kind_issue" id="item_unit_kind_issue"  >
+                           <option value={{ item_unit_kind_issue }} </option> 
+                   
+            </select>  
+
+              <span  class="success"  name="item_unit_kind_issue"  id={{"instance.item_unit_kind_issue"}} value={{instance.item_unit_kind_issue}}> 
+               <label for="">{{instance.item_unit_kind_issue}}  </label>
+               </span>  
+                {% endcomment %}
+      
+                   {% comment %} <input type="text" id={{"instance.item_unit_kind_issue"}} name="item_unit_kind_issue" value={{instance.item_unit_kind_issue}} size="8"           <span  class="success" </span>  
+          
+        {% endcomment %}
+
+{% comment %}       
+              <span name="item_unit_kind_issue"  class="label warning">  <label for="">{{form_kind.item_unit_kind_issue}}</label> </span>
+     {% endcomment %}
+{% comment %}     
+            {% else %}  {% endcomment %}
+{% comment %}            
+           <select class="warning" name="item_unit_kind_issue" id="item_unit_kind_issue"  >
+               <option value="0" selected> <option>
+                <option value={{ form_kind.item_unit_kind_issue }} </option>  {% endcomment %}
+                 {% comment %}
+                <option value="kg" >kg <option>
+                  <option value="grams" >grams <option>   
+                   <option value="units_on_box" >units on box <option>   
+                 <option value="liters">liters <option>
+                  <option value="other" >other <option>   
+              </select>    {% endcomment %}
+           
+
+{% comment %} 
+            <select name="item_unit_kind_issue" id="item_unit_kind_issue"  >
+               <option selected="selected">0 </option>
+              
+                <option value={{ form_kind.item_unit_kind_issue}} </option> 
+                  
+              </select> 
+       
+             <input type="text" id={{"instance.item_unit_kind_issue"}} name="item_unit_kind_issue_green" value={{instance.item_unit_kind_issue}} size="8"           <span  class="success" </span>  
+             
+
+          
+          <span  class="label warning">  <label for="">{{form_kind.item_unit_kind_issue}}</label> </span> 
+           <label for="">{{form_kind.item_unit_kind_issue}}</label> {% endcomment %}
+          
+     
+{% comment %}      
+     
+          {% endif %}  {% endcomment %}
+
+        
+  
+      </td>
+    
+    <td>
+      <label for="">{{instance.item_name_issue}}</label>
+    </td>
+   
+    <td>
+     
+      <label for="">{{instance.item_fattal_code_issue}}</label>
+
+    </td>
+    <td>
+       <label for="">{{instance.DateIssue}}</label>
+    </td>
+
+
+
+  
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+ 
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+
+  </tr>
+
+{% endfor %}
+
+</table>
+
+<input type="Submit" name="update_the_form" value="update changes">
+<input type="reset" value="reset form">
+<br><br>
+ <INPUT TYPE="Submit"  id="deleted_items" name="" value="Delete marked items">
+ <input type="checkbox" id="update_main_db" name="update_main_db" value="update_main_db"
+ 
+ <label for="update_main_db">Update main DB with missing quantity kind </label><br><br>
+
+
+</form>
+
+
+      {% comment %} <h1>Faux Column CSS Layouts</h1>
+      <p>These 2 Column Faux CSS Layouts use a background image to make it look like the left and right columns are equal in height and independent of each other.</p>
+      <p style="margin:8px 0;">Etsemper tristiquat orci ligula ligula vitae netus justo tellus nulla elit. Temporid interdum partur gravida justo nequam sem fuscing malesuada vitae lacus. Pellentesquenunc non tincidunt lacilis donec vel purus maecenatis eu sed urna. Ideu justo hac eros sed eros mattitor quis vestibus magnisl nisl. Nullanequam egestas facilisi orci sodales ut ac molesuada interdum tincidunt scetus.</p>
+      <p style="margin:8px 0;">Semnibh sed anterdum et laorem nunc tempus temper malesuada sem consectetuer. Enimhabitae nec egest eu auctorttis in leo dui semportis ris enim. Maurissemportor commod vestibulum feugiat auctor alique nullamcorper ligula convallicitur justo orna. Sedid ut elit vestibulum sed curabitur platea justo dissim ultris sed. Sagittisquisque quisque leo dui met tellus curabitur auctor et quat loreet.</p>
+      <p style="margin:8px 0;">Nullaet ligula ut ant elit sed condiment elit quis urna laoreet. Fringpor aliquam justo dui nec morbi sed diculis ipsum elit temportis. Ultrisiacus ut curabitae orci nulla curabitur leo nunc lor sapien ligula. Diamquis sagittitor quat vitae leo ipsum id vivamus sodalesuada por gravida. Sedet rutrum pellus tellus vel nonummy tincidunt urna purus malestibulum adipis. Nullaet ligula ut ant elit sed condiment elit quis urna laoreet. Fringpor aliquam justo dui nec morbi sed diculis ipsum elit temportis. Ultrisiacus ut curabitae orci nulla curabitur leo nunc lor sapien ligula. Diamquis sagittitor quat vitae leo ipsum id vivamus sodalesuada por gravida. Sedet rutrum pellus tellus vel nonummy tincidunt urna purus malestibulum adipisNullaet ligula ut ant elit sed condiment elit quis urna laoreet. Fringpor aliquam justo dui nec morbi sed diculis ipsum elit temportis. Ultrisiacus ut curabitae orci nulla curabitur leo nunc lor sapien ligula. Diamquis sagittitor quat vitae leo ipsum id vivamus sodalesuada por gravida. Sedet rutrum pellus tellus vel nonummy tincidunt urna purus malestibulum adipisNullaet ligula ut ant elit sed condiment elit quis urna laoreet. Fringpor aliquam justo dui nec morbi sed diculis ipsum elit temportis. Ultrisiacus ut curabitae orci nulla curabitur leo nunc lor sapien ligula. Diamquis sagittitor quat vitae leo ipsum id vivamus sodalesuada por gravida. Sedet rutrum pellus tellus vel nonummy tincidunt urna purus malestibulum adipis</p>
+      <ul style="margin:0 0 15px 0; padding:0; list-style-type:none;">
+        <li style="margin-right:15px; display:inline;"><a href="#">Free CSS Templates</a></li>
+        <li style="margin-right:15px; display:inline;"><a href="#">Free CSS Layouts</a></li>
+        <li style="margin-right:15px; display:inline;"><a href="#">Code Sucks</a></li>
+      </ul> {% endcomment %}
+      <div class="clear"> </div>
     </div>
-    <div class="yui-b">
-      <div id="secondary">Secondary Column</div>
-    </div>
+    <!-- End Right Column -->
+    <div class="clear"> </div>
   </div>
-  <div id="ft">
-    <div id="footer">Footer</div>
-  </div>
-</div>
+  <!-- End Faux Columns -->
+ </div>
+<!-- End Wrapper -->
+
+
 
 </body>
+
+
 {% endblock %}
 </html>
